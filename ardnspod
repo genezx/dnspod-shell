@@ -19,7 +19,8 @@ export arToken
 
 # The url to be used for querying public ipv6 address. We set a default here.
 
-export arIp6QueryUrl="http://ipv6.rehi.org/ip"
+export arIp4QueryUrl="http://v4.ip.zxinc.org/getip"
+export arIp6QueryUrl="http://v6.ip.zxinc.org/getip"
 
 # The error code to return when a ddns record is not changed
 # By default, report unchanged event as success
@@ -119,6 +120,10 @@ arWanIp4() {
             hostIp=$(ifconfig | grep "inet " | grep -v 127.0.0.1 | awk '{print $2}' | grep -Ev "$lanIps")
         ;;
     esac
+
+    if [ -z "$hostIp" ]; then
+        hostIp=$(arRequest $arIp4QueryUrl)
+    fi
 
     if [ -z "$hostIp" ]; then
         return 2
